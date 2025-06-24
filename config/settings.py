@@ -44,6 +44,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 INSTALLED_APPS = [
     'accounts',
+    'todo',
     'rest_framework',
     'rest_framework.authtoken',  # এইটা শুধু Token Auth চাইলে
     'django.contrib.admin',
