@@ -16,6 +16,10 @@ from django.urls import reverse
 from .models import User
 from .serializers import UserSerializer,RegisterSerializer, LoginSerializer
 
+from django.http import JsonResponse ,HttpResponse
+from django.contrib.auth.decorators import login_required
+from rest_framework_simplejwt.tokens import RefreshToken
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -126,3 +130,16 @@ class PasswordResetConfirmView(APIView):
         user.save()
         return Response({'message': 'Password reset successful'})
 
+@login_required
+def social_login_success(request):
+    user = request.user
+    refresh = RefreshToken.for_user(user)
+    return JsonResponse({
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'email': user.email,
+        'name': user.get_full_name(),
+    })
+
+def social_login_success(request):
+    return HttpResponse("✅ Google Login Successful!")

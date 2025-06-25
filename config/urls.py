@@ -18,9 +18,14 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from accounts.views import social_login_success
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/todos/', include('todo.urls')),
+    path('accounts/', include('allauth.urls')),
+    path("social/success/", social_login_success, name="social-success"),
+
 ]

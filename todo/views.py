@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from .models import ToDo
 from .serializers import ToDoSerializer
 
+
 class ToDoListCreateView(generics.ListCreateAPIView):
     serializer_class = ToDoSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -18,3 +19,4 @@ class ToDoDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return ToDo.objects.filter(user=self.request.user)
+
