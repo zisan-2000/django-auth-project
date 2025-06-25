@@ -151,3 +151,5 @@ Django project split into accounts/ and todo/ apps
 | Email পাঠানো                 | `send_mail()` দিয়ে console/backend SMTP        |
 | Session-based Authentication | Login → Cookie sessionID                       |
 | Postman দিয়ে Full API Test   | Register → Verify → Login → Reset Password ✅  |
+
+✅ Serial 2 Complete: Gmail SMTP setup with real email verification & password reset flow

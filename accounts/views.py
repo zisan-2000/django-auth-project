@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login, logout
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.conf import settings
+
 
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
@@ -29,9 +31,11 @@ class RegisterView(generics.CreateAPIView):
         send_mail(
             subject="Verify your email",
             message=f"Click the link to verify your email: {link}",
-            from_email=None,
+            from_email=settings.DEFAULT_FROM_EMAIL,  # স্পষ্ট করে বলা হলো
             recipient_list=[user.email],
-        )
+            fail_silently=False  # ✅ Debug এর জন্য এটা রাখা ভালো
+      )
+
 
 class LoginView(APIView):
     def post(self, request):
