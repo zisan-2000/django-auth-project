@@ -197,3 +197,9 @@ Django project split into accounts/ and todo/ apps
 ✅ Security, Token, Session, SMTP — সব বাস্তবে implement করেছেন
 🟢 আপনার দক্ষতা এখন:
 🏆 “Production-ready Email Auth System তৈরি করার সম্পূর্ণ যোগ্যতা অর্জন করেছেন”
+
+# 🛡️ Django JWT Authentication API (SimpleJWT)
+
+This project implements a secure authentication system using **Django REST Framework** and **SimpleJWT** for token-based access.
+
+---
