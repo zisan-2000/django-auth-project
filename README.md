@@ -129,3 +129,25 @@ Project Structure
 Django project split into accounts/ and todo/ apps
 
 ✅ Done
+
+# serial 2
+
+| ধাপ       | কাজ                                         | ফলাফল  |
+| --------- | ------------------------------------------- | ------ |
+| 🔹 Step 1 | Register → Email পাঠানো                     | ✅ সফল |
+| 🔹 Step 2 | Email verification (GET)                    | ✅ সফল |
+| 🔹 Step 3 | Login (Session based)                       | ✅ সফল |
+| 🔹 Step 4 | Forgot password request → ইমেইলে লিংক       | ✅ সফল |
+| 🔹 Step 5 | Password reset confirm → নতুন পাসওয়ার্ড সেট | ✅ সফল |
+| 🔹 Step 6 | নতুন পাসওয়ার্ড দিয়ে Login                   | ✅ সফল |
+
+# Learning form serial 2
+
+| বিষয়                         | আপনি কীভাবে শিখলেন                             |
+| ---------------------------- | ---------------------------------------------- |
+| Django তে ইমেইল ভেরিফিকেশন   | `urlsafe_base64_encode + token_generator` দিয়ে |
+| Token Validation             | `check_token()` দিয়ে                           |
+| Password Reset Secure Link   | UID + Token সহ URL ব্যবহার করে                 |
+| Email পাঠানো                 | `send_mail()` দিয়ে console/backend SMTP        |
+| Session-based Authentication | Login → Cookie sessionID                       |
+| Postman দিয়ে Full API Test   | Register → Verify → Login → Reset Password ✅  |
