@@ -21,7 +21,9 @@ class LoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         user = authenticate(**data)
-        if user and user.is_active:
+        if user:
+            if not user.is_active:
+                raise serializers.ValidationError("Please verify your email first.")
             return user
         raise serializers.ValidationError("Invalid credentials")
 

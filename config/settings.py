@@ -133,6 +133,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Token Generator ও Email Config
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@todoapp.local'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
