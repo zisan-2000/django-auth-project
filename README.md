@@ -153,3 +153,47 @@ Django project split into accounts/ and todo/ apps
 | Postman দিয়ে Full API Test   | Register → Verify → Login → Reset Password ✅  |
 
 ✅ Serial 2 Complete: Gmail SMTP setup with real email verification & password reset flow
+
+# from serial 2
+
+✅ Serial 2 থেকে Django-তে যা যা শিখলেন (Easy Points)
+
+# 🔐 Authentication Flow
+
+✅ ইমেইল ভেরিফিকেশন ছাড়া লগইন ব্লক করা (is_active=False)
+✅ ইমেইল ভেরিফিকেশন লিংক auto generate করে ইমেইলে পাঠানো
+
+# 📬 Email System
+
+✅ send_mail() দিয়ে ইমেইল পাঠানো
+✅ Gmail SMTP সেটআপ করা (App Password সহ)
+✅ settings.py ও .env দিয়ে secure email config করা
+
+# 🧾 Token System
+
+✅ Django এর PasswordResetTokenGenerator ব্যবহার করে secure token তৈরি
+✅ urlsafe_base64_encode ও decode দিয়ে user ID encode/decode করা
+✅ Token + UID সহ ইমেইল লিংক বানানো
+
+# 🔁 Password Reset Flow
+
+✅ “Forgot password” request → ইমেইলে reset link পাঠানো
+✅ reset-password-confirm link → নতুন password সেট করা
+✅ Token validation handle করে secure password update
+
+# 🧪 API Testing via Postman
+
+✅ Register → Email verify → Login → Reset → Re-login full flow
+✅ Bad token, invalid email ইত্যাদি response বুঝে handle করা
+
+# ⚙️ Code Structure
+
+✅ Views: function-based & class-based usage
+✅ settings → email config
+✅ .env থেকে sensitive data ব্যবহার
+🎁 Bonus: Real-World Practice
+✅ Gmail-এর মাধ্যমে বাস্তব ইমেইল সিস্টেম কাজ করে দেখেছেন
+✅ Development vs Production config বুঝেছেন
+✅ Security, Token, Session, SMTP — সব বাস্তবে implement করেছেন
+🟢 আপনার দক্ষতা এখন:
+🏆 “Production-ready Email Auth System তৈরি করার সম্পূর্ণ যোগ্যতা অর্জন করেছেন”
