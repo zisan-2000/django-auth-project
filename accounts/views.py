@@ -20,6 +20,8 @@ from django.http import JsonResponse ,HttpResponse
 from django.contrib.auth.decorators import login_required
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .permissions import IsSuperAdmin, IsAdmin, IsUser
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -64,9 +66,14 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser or user.is_staff:
+        if user.role == 'super_admin':
             return User.objects.all()
-        return User.objects.filter(id=user.id)
+
+        elif user.role == 'admin':
+            return User.objects.filter(assigned_admin=user)
+
+        else:  # সাধারণ ইউজার
+            return User.objects.filter(id=user.id)
 
     def perform_update(self, serializer):
         user = self.request.user

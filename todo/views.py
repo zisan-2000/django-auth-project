@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions
 from .models import ToDo
 from .serializers import ToDoSerializer
+from accounts.permissions import IsAdmin, IsUser, IsSuperAdmin  # ✅ import
 
 
 class ToDoListCreateView(generics.ListCreateAPIView):
@@ -8,8 +9,19 @@ class ToDoListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return ToDo.objects.filter(user=self.request.user)
+        user = self.request.user
 
+        if user.role == 'super_admin':
+            return ToDo.objects.all()
+
+        elif user.role == 'admin':
+            # ✅ নিজের এবং অধীনস্থ ইউজারদের ToDo দেখবে
+            return ToDo.objects.filter(user__assigned_admin=user)
+
+        else:
+            # ✅ সাধারণ ইউজার → শুধু নিজের
+            return ToDo.objects.filter(user=user)
+        
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -18,5 +30,13 @@ class ToDoDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return ToDo.objects.filter(user=self.request.user)
+        user = self.request.user
 
+        if user.role == 'super_admin':
+            return ToDo.objects.all()
+
+        elif user.role == 'admin':
+            return ToDo.objects.filter(user__assigned_admin=user)
+
+        else:
+            return ToDo.objects.filter(user=user)
