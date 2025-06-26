@@ -138,8 +138,7 @@ def social_login_success(request):
         'access': str(refresh.access_token),
         'refresh': str(refresh),
         'email': user.email,
-        'name': user.get_full_name(),
+        'full_name': user.full_name,  # 🔁 এই লাইন fixed
     })
 
-def social_login_success(request):
-    return HttpResponse("✅ Google Login Successful!")
+
