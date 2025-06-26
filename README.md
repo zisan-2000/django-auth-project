@@ -203,3 +203,40 @@ Django project split into accounts/ and todo/ apps
 This project implements a secure authentication system using **Django REST Framework** and **SimpleJWT** for token-based access.
 
 ---
+
+✅ 1️⃣ User Registration, Login, Logout
+ফিচার ✅ হয়েছে?
+Custom User model (AbstractBaseUser) ✅ হ্যাঁ
+DRF-based RegisterView, LoginView, LogoutView ✅ হ্যাঁ
+UserViewSet দিয়ে profile access & update ✅ হ্যাঁ
+✅ Custom logic + ToDo linkage ✅ হ্যাঁ
+
+➡️ Status: ✅ Complete
+
+✅ 2️⃣ Email Verification & Password Reset
+ফিচার ✅ হয়েছে?
+django.core.mail.send_mail() ব্যবহার ✅ হ্যাঁ
+default_token_generator দিয়ে secure link ✅ হ্যাঁ
+verify-email/<uidb64>/<token>/ URL + View ✅ হ্যাঁ
+reset-password/ এবং reset-password-confirm/<uidb64>/<token>/ ✅ হ্যাঁ
+
+➡️ Status: ✅ Complete
+
+✅ 3️⃣ JWT Authentication (SimpleJWT)
+ফিচার ✅ হয়েছে?
+POST /api/accounts/token/ → Access/Refresh Token ✅ হ্যাঁ
+POST /api/accounts/token/refresh/ → New Access Token ✅ হ্যাঁ
+Token blacklist & rotation support (enabled in settings) ✅ হ্যাঁ
+Protected endpoints using JWTAuthentication class ✅ হ্যাঁ
+
+➡️ Status: ✅ Complete
+
+✅ 4️⃣ Social Login (Google OAuth)
+ফিচার ✅ হয়েছে?
+django-allauth installed, configured ✅ হ্যাঁ
+Google Console setup, client ID/secret ✅ ✅ হ্যাঁ
+GET /accounts/google/login/ → Login flow working ✅ হ্যাঁ
+GET /social/success/ → JWT + User Info return ✅ হ্যাঁ
+Postman-tested token + frontend integration-ready ✅ হ্যাঁ
+
+➡️ Status: ✅ Complete
