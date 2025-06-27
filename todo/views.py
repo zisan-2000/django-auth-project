@@ -2,7 +2,7 @@ from rest_framework import generics, permissions
 from .models import ToDo
 from .serializers import ToDoSerializer
 from accounts.permissions import IsAdmin, IsUser, IsSuperAdmin  # ✅ import
-
+from django.db.models import Q
 
 class ToDoListCreateView(generics.ListCreateAPIView):
     serializer_class = ToDoSerializer
@@ -15,8 +15,9 @@ class ToDoListCreateView(generics.ListCreateAPIView):
             return ToDo.objects.all()
 
         elif user.role == 'admin':
-            # ✅ নিজের এবং অধীনস্থ ইউজারদের ToDo দেখবে
-            return ToDo.objects.filter(user__assigned_admin=user)
+            return ToDo.objects.filter(
+                Q(user=user) | Q(user__admin=user)
+            )
 
         else:
             # ✅ সাধারণ ইউজার → শুধু নিজের

@@ -1,11 +1,16 @@
 # accounts/views.py
 
-from rest_framework import viewsets,generics, permissions, status
+from rest_framework import viewsets,generics, permissions, status, serializers
+from rest_framework.exceptions import PermissionDenied  # ✅ এই লাইনটি যোগ করুন
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login, logout
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.conf import settings
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.db.models import Q
+
+
 
 
 from django.utils.encoding import force_bytes
@@ -13,8 +18,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.urls import reverse
 
-from .models import User
-from .serializers import UserSerializer,RegisterSerializer, LoginSerializer
+from .models import User, Division, Station, Team
+from .serializers import UserSerializer,RegisterSerializer, LoginSerializer, DivisionSerializer, StationSerializer, TeamSerializer,CustomTokenObtainPairSerializer
 
 from django.http import JsonResponse ,HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -70,23 +75,72 @@ class UserViewSet(viewsets.ModelViewSet):
             return User.objects.all()
 
         elif user.role == 'admin':
-            return User.objects.filter(assigned_admin=user)
-
+            return User.objects.filter(
+                Q(admin=user) | Q(id=user.id),  # 🔁 direct admin
+                division=user.division,  # 🔁 same division
+                station=user.station     # 🔁 same station
+            )
+        
         else:  # সাধারণ ইউজার
             return User.objects.filter(id=user.id)
 
+    def perform_create(self, serializer):  # ✅ এই মেথড এখানে লিখবেন
+        user = self.request.user
+        password = self.request.data.get('password')
+        
+        if not password:
+            raise serializers.ValidationError({"password": "Password is required."})
+    
+        if user.role == 'super_admin':
+            serializer.save(password=password)  # ✅ hashed হবে
+        elif user.role == 'admin':
+            serializer.save(
+                admin=user,
+                division=user.division,
+                station=user.station,
+                is_active=True,
+                is_staff=False,
+                is_superuser=False,
+                password=password  # ✅ hashed হবে
+            )
+
+        else:
+            raise PermissionDenied("You are not allowed to create users.")
+        
     def perform_update(self, serializer):
         user = self.request.user
-        if not user.is_superuser:
+        instance = self.get_object()
+
+    # Superadmin সব আপডেট করতে পারে
+        if user.role == 'superadmin':
             serializer.save()
+    
+    # Admin শুধু নিজের অধীনের user update করতে পারবে
+        elif user.role == 'admin' and instance.admin == user:
+            serializer.save()
+    
+    # অন্য কেউ update করতে পারবে না
+        elif user == instance:
+            serializer.save()  # নিজেকে update করার অনুমতি
         else:
-            serializer.save()
+            raise PermissionDenied("You can only update your own or your users' info.")
 
     def destroy(self, request, *args, **kwargs):
-        user = self.get_object()
-        if not request.user.is_superuser and request.user != user:
-            return Response({"detail": "You can only delete your own account."}, status=status.HTTP_403_FORBIDDEN)
-        return super().destroy(request, *args, **kwargs)
+        user = self.request.user
+        instance = self.get_object()
+
+        if user.role == 'superadmin':
+            return super().destroy(request, *args, **kwargs)
+
+        elif user.role == 'admin' and instance.admin == user:
+            return super().destroy(request, *args, **kwargs)
+
+        elif user == instance:
+            return super().destroy(request, *args, **kwargs)
+
+        else:
+            raise PermissionDenied("You can only delete your own or your users.")
+
 
 
 class VerifyEmailView(APIView):
@@ -148,4 +202,17 @@ def social_login_success(request):
         'full_name': user.full_name,  # 🔁 এই লাইন fixed
     })
 
+class DivisionViewSet(viewsets.ModelViewSet):
+    queryset = Division.objects.all()
+    serializer_class = DivisionSerializer
 
+class StationViewSet(viewsets.ModelViewSet):
+    queryset = Station.objects.all()
+    serializer_class = StationSerializer
+
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
