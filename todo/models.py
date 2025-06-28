@@ -8,5 +8,12 @@ class ToDo(models.Model):
     completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        permissions = [
+            ("can_approve_todo", "Can approve a todo"),
+            ("can_edit_others_todo", "Can edit todos of other users"),
+            ("can_delete_others_todo", "Can delete todos of other users"),
+        ]
+
     def __str__(self):
         return self.title
