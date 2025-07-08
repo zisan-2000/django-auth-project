@@ -9,6 +9,8 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Q
+from rest_framework.permissions import IsAuthenticated
+
 
 
 
@@ -216,3 +218,19 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class UserPermissionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        permissions = user.get_all_permissions()
+        return Response({
+            "email": user.email,
+            "full_name": user.full_name,
+            "role": user.role,
+            "permissions": list(permissions),
+            "canApprove": user.has_perm("todo.can_approve_todo"),
+            "canEdit": user.has_perm("todo.change_todo"),
+            "canDelete": user.has_perm("todo.delete_todo")
+        })

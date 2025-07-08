@@ -48,6 +48,7 @@ AUTH_USER_MODEL = 'accounts.User'
 INSTALLED_APPS = [
     'accounts',
     'todo',
+    'guardian',  # ✅ এই লাইনটি যোগ করুন
     'rest_framework',
     'rest_framework.authtoken',  # এইটা শুধু Token Auth চাইলে
     'django.contrib.admin',
@@ -69,7 +70,11 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',  # ✅ এই লাইন যোগ করুন
 ]
+
+ANONYMOUS_USER_ID = -1
+
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False

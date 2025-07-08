@@ -1,10 +1,17 @@
 # todo/permissions.py
 
 from rest_framework.permissions import BasePermission
+from guardian.shortcuts import get_perms
+
 
 class CanApproveToDo(BasePermission):
     def has_permission(self, request, view):
-        return request.user.has_perm("todo.can_approve_todo")
+        # শুধু login check
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        # object-level permission check
+        return "can_approve_todo" in get_perms(request.user, obj)
 
 class CanEditOthersToDo(BasePermission):
     def has_object_permission(self, request, view, obj):
