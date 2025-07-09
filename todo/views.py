@@ -1,7 +1,11 @@
 from rest_framework import generics, permissions, status
 from .models import ToDo
 from .serializers import ToDoSerializer
-from accounts.permissions import IsAdmin, IsUser, IsSuperAdmin  # ✅ import
+from accounts.permissions import IsAdmin, IsUser, IsSuperAdmin, SameDivisionPermission  # ✅ import
+from todo.permissions import (
+    CanEditOthersToDo,
+    CanDeleteOthersToDo
+)
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +13,10 @@ from .permissions import CanApproveToDo, CanEditOthersToDo, CanDeleteOthersToDo
 
 from guardian.shortcuts import assign_perm
 from accounts.models import User
+from rest_framework.permissions import IsAuthenticated
+
+
+
 
 class ToDoListCreateView(generics.ListCreateAPIView):
     serializer_class = ToDoSerializer
@@ -22,12 +30,16 @@ class ToDoListCreateView(generics.ListCreateAPIView):
 
         elif user.role == 'admin':
             return ToDo.objects.filter(
-                Q(user=user) | Q(user__admin=user)
+                Q(user=user) | Q(user__admin=user),
+                user__division=user.division  # ✅ ABAC filter!
             )
 
         else:
-            # ✅ সাধারণ ইউজার → শুধু নিজের
-            return ToDo.objects.filter(user=user)
+            # ✅ সাধারণ ইউজার → শুধু নিজের division এর নিজের data
+            return ToDo.objects.filter(
+                user=user,
+                user__division=user.division  # ✅ ABAC!
+            )
         
     def perform_create(self, serializer):
         user = self.request.user
@@ -55,9 +67,11 @@ class ToDoListCreateView(generics.ListCreateAPIView):
 class ToDoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ToDoSerializer
     permission_classes = [
-        permissions.IsAuthenticated,
-        CanEditOthersToDo,
-        CanDeleteOthersToDo
+        IsAuthenticated,           # 🔐 Login check
+        IsAdmin | IsSuperAdmin,    # 🔑 RBAC → Admin or Super Admin only
+        SameDivisionPermission,    # 🧠 ABAC → user.division == todo.user.division
+        CanEditOthersToDo,         # ✏️ Object permission (edit)
+        CanDeleteOthersToDo        # 🗑️ Object permission (delete)
     ]
     
     def get_queryset(self):
@@ -67,8 +81,11 @@ class ToDoDetailView(generics.RetrieveUpdateDestroyAPIView):
             return ToDo.objects.all()
 
         elif user.role == 'admin':
-            return ToDo.objects.filter(Q(user=user) | Q(user__admin=user))
-
+            return ToDo.objects.filter(
+                Q(user=user) | Q(user__admin=user),
+                user__division=user.division  # 🧠 ABAC: only own division
+            )
+        
         else:
             return ToDo.objects.filter(user=user)
         
