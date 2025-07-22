@@ -12,9 +12,6 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 
 
-
-
-
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -233,4 +230,60 @@ class UserPermissionView(APIView):
             "canApprove": user.has_perm("todo.can_approve_todo"),
             "canEdit": user.has_perm("todo.change_todo"),
             "canDelete": user.has_perm("todo.delete_todo")
+        })
+
+
+class ImpersonateUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        current_user = request.user
+
+        # ✅ শুধু super_admin impersonate করতে পারবে
+        if current_user.role != 'super_admin':
+            return Response({'error': 'Only super admins can impersonate users'}, status=403)
+
+        try:
+            target_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        # ✅ টার্গেট ইউজার এর জন্য নতুন token issue করো
+        refresh = RefreshToken.for_user(target_user)
+
+        return Response({
+            'message': f'Now impersonating {target_user.email}',
+            'user': {
+                'id': target_user.id,
+                'email': target_user.email,
+                'role': target_user.role
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        })
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        current_user = request.user
+
+        if current_user.role != 'super_admin':
+            return Response({'error': 'Only super admins can impersonate'}, status=403)
+
+        try:
+            target_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        refresh = RefreshToken.for_user(target_user)
+
+        return Response({
+            'message': f'Now impersonating {target_user.email}',
+            'user': {
+                'id': target_user.id,
+                'email': target_user.email,
+                'role': target_user.role
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
         })

@@ -2,7 +2,7 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RegisterView, LoginView, LogoutView, UserViewSet,VerifyEmailView,PasswordResetRequestView,PasswordResetConfirmView,DivisionViewSet, StationViewSet, TeamViewSet,CustomTokenObtainPairView,UserPermissionView
+from .views import RegisterView, LoginView, LogoutView, UserViewSet,VerifyEmailView,PasswordResetRequestView,PasswordResetConfirmView,DivisionViewSet, StationViewSet, TeamViewSet,CustomTokenObtainPairView,UserPermissionView, ImpersonateUserView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -31,4 +31,6 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),  
     path('token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),  
     path('me/', UserPermissionView.as_view(), name='user-permissions'),
+    path('impersonate/<int:user_id>/', ImpersonateUserView.as_view(), name='impersonate-user'),
+
 ]
