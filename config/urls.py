@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/todos/', include('todo.urls')),
+    path('api/blog/', include('blog.urls')),  # ✅ নতুন URL pattern
     path('accounts/', include('allauth.urls')),
     path("social/success/", social_login_success, name="social-success"),
 

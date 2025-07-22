@@ -48,6 +48,7 @@ AUTH_USER_MODEL = 'accounts.User'
 INSTALLED_APPS = [
     'accounts',
     'todo',
+    'blog',
     'guardian',  # ✅ এই লাইনটি যোগ করুন
     'rest_framework',
     'rest_framework.authtoken',  # এইটা শুধু Token Auth চাইলে
